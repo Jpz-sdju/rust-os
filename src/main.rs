@@ -36,7 +36,7 @@ fn jpz_main() {
     // trap::trap_op::init_trap();
     // batch_os_init();
     // batch_run_next_app();
-    print!("heihei");
+    print!("heishei");
     panic!("wocan!");
 }
 

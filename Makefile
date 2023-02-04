@@ -11,9 +11,15 @@ qemu:bin
 		-machine virt \
 		-nographic \
 		-bios $(BOOTLOADER) \
+		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA)
+
+debug:bin 
+	qemu-system-riscv64	\
+		-machine virt \
+		-nographic \
+		-bios $(BOOTLOADER) \
 		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA)	\
 		-s -S
-
 dis:
 	rust-objdump --arch-name=riscv64 $(ELF) -S > exp.S
 
