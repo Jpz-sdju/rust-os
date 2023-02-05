@@ -4,15 +4,28 @@ use crate::syscall::sys_call;
 use riscv::register::{
     stvec::TrapMode,
     scause::{self,Exception,Trap},
-    stval, stvec
+    stval, stvec, sstatus
 };
 use riscv::register::sstatus::{Sstatus,SPP};
-struct TrapContext{
+#[repr(C)]
+pub struct TrapContext{
     gpr : [usize;32],
     sstatus : Sstatus,
     sepc : usize
 }
-
+impl TrapContext {
+    pub fn init_context (entry: usize, sp: usize) -> Self {
+        let mut sstatus = sstatus::read();
+        sstatus.set_spp(SPP::User);
+        let mut x = Self {
+            gpr : [0; 32],
+            sstatus : sstatus,
+            sepc : entry
+        };
+        x.gpr[2] = sp;
+        x
+    }
+}
 pub fn init_trap() -> (){
     extern "C"{
         fn __alltraps();
@@ -24,7 +37,7 @@ pub fn init_trap() -> (){
 }
 
 #[no_mangle]
-fn trap_handler(context: &mut TrapContext) -> (){
+fn trap_handler(context: &mut TrapContext) -> & TrapContext{
     let scause = scause::read();
     let stval = stval::read();
     match scause.cause() {
@@ -44,5 +57,6 @@ fn trap_handler(context: &mut TrapContext) -> (){
             panic!("zuile");
         }
     }
+    context
 }
 

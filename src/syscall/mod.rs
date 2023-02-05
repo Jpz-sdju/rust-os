@@ -25,13 +25,14 @@ fn sys_write(a0: usize, a1: usize, a2: usize) -> usize {
                 let content = core::slice::from_raw_parts(a1 as *const u8,a2);
                 let str = core::str::from_utf8(content).unwrap();
                 print!("{}",str);
+                str.len() 
             }
         }
         _ => {
+            // let x=2;
             panic!("error!these operation are not in protected!");
         }
     }
-    0
     
 }
 fn sys_exit(a0: usize, a1: usize, a2: usize) -> ! {
