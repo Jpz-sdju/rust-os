@@ -2,6 +2,9 @@
 ARCH := riscv64gc-unknown-none-elf
 OBJCOPY := rust-objcopy
 BOOTLOADER := ./bootloader/rustsbi-qemu.bin
+GDB := riscv64-unknown-elf-gdb
+
+
 ELF := ./target/$(ARCH)/debug/exp
 KERNEL_ENTRY_PA := 0x80200000
 bin: build
@@ -20,6 +23,9 @@ debug:bin
 		-bios $(BOOTLOADER) \
 		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA)	\
 		-s -S
+
+gdb:
+	$(GDB) -s $(ELF) -ex 'target remote localhost:1234'
 dis:
 	rust-objdump --arch-name=riscv64 $(ELF) -S > exp.S
 
