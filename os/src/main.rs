@@ -39,4 +39,5 @@ fn jpz_main() {
 }
 
 core::arch::global_asm!(include_str!("./asm/entry.S"));
+core::arch::global_asm!(include_str!("./asm/link_app.S"));
 

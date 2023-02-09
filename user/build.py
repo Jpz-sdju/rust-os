@@ -13,7 +13,7 @@ for app in apps:
     app = app[: app.find(".")]
     print(app)
     os.system(
-        "cargo rustc --bin %s --release -- -Clink-args=-Ttext=%x"
+        "cargo rustc --verbose --bin %s --release -- -Clink-args=-Ttext=%x"
         % (app, base_address + step * app_id)
     )
     print(

@@ -5,7 +5,7 @@ BOOTLOADER := ./bootloader/rustsbi-qemu.bin
 GDB := riscv64-unknown-elf-gdb
 
 
-ELF := ./target/$(ARCH)/debug/exp
+ELF := ./target/$(ARCH)/debug/rust-os
 KERNEL_ENTRY_PA := 0x80200000
 bin: build
 	$(OBJCOPY) $(ELF) --strip-all hehi.bin
@@ -27,7 +27,7 @@ debug:bin
 gdb:
 	$(GDB) -s $(ELF) -ex 'target remote localhost:1234'
 dis:
-	rust-objdump --arch-name=riscv64 $(ELF) -S > exp.S
+	rust-objdump --arch-name=riscv64 $(ELF) -s > exp.S
 
 build: 
 	cargo build -v

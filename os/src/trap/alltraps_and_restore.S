@@ -1,13 +1,14 @@
 .section .text.trap
-
+.globl __alltraps
+.globl __restore
 __alltraps:
-    ; la sp,KERNEL_STACK;
+    # la sp,KERNEL_STACK;
     csrrw sp, sscratch, sp; //now sscratch is point to user stack
     addi sp,sp,-8*34; //8 mean the arch is riscv64
     sd x0,0(sp);
     sd x1,1*8(sp);
 
-    ; sd x2,2*8(sp);
+    # sd x2,2*8(sp);
 
     sd x3,3*8(sp);
     sd x4,4*8(sp);

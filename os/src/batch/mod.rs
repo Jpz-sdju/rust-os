@@ -61,8 +61,8 @@ impl<T> UPSafeCell<T>{
 impl AppManager {
     unsafe fn load_next_app(&mut self) {
         self.current_num += 1;
-        let start_ptr = (self.app_start[self.current_num]) as *const u8;
-        let app_length = AM.access().app_start[self.current_num +1 ] - AM.access().app_start[self.current_num];
+        let start_ptr = (self.app_start[self.current_num -1]) as *const u8;
+        let app_length = self.app_start[self.current_num ] - self.app_start[self.current_num-1];
         let app_content = core::slice::from_raw_parts(start_ptr, app_length);
         
         let app_anchor = core::slice::from_raw_parts_mut(APP_BASE_ADDRESS as *mut u8 , app_content.len());
@@ -81,7 +81,7 @@ lazy_static! {
             }; 
             let mut normal_app_start_array : [usize; APP_NUM_LIMIT] = [0 as usize;APP_NUM_LIMIT];
             let app_start_array = unsafe {
-                core::slice::from_raw_parts(num_app_ptr.add(1), all_app_num)
+                core::slice::from_raw_parts(num_app_ptr.add(1), all_app_num +1 )//buf fix :length should be num of apps + 1
             };
             normal_app_start_array[0..= all_app_num].copy_from_slice(app_start_array);
     
@@ -97,13 +97,14 @@ lazy_static! {
 
 
 pub fn run_next_app(){
-    let am = AM.access();
+    let mut am = AM.access_mut();
     
-    if am.current_num >= (am.all_app_num -1 ){
+    if am.current_num >= (am.all_app_num  ){
         panic!("is all done!");
     }
+    // drop(am)
     unsafe {
-        AM.access_mut().load_next_app();
+        am.load_next_app();     //before bug fix: AM.load_next_app(),wtf
     };
     drop(am);
     extern "C" {
