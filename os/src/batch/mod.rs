@@ -96,7 +96,7 @@ lazy_static! {
 }
 
 
-pub fn run_next_app(){
+pub fn run_next_app() {
     let mut am = AM.access_mut();
     
     if am.current_num >= (am.all_app_num  ){

@@ -35,7 +35,7 @@ fn jpz_main() {
     // init_bss();
     trap::trap_op::init_trap();
     batch::run_next_app();
-    panic!("wocan!");
+    panic!("fin!");
 }
 
 core::arch::global_asm!(include_str!("./asm/entry.S"));

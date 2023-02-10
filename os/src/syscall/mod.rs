@@ -1,5 +1,5 @@
 use core::panic;
-
+use crate::batch::run_next_app;
 const SYSCALL_WRITE: usize = 64;
 const SYSCALL_EXIT: usize = 93;//?why
 const STD_OUT: usize = 1;
@@ -36,5 +36,6 @@ fn sys_write(a0: usize, a1: usize, a2: usize) -> usize {
     
 }
 fn sys_exit(a0: usize, a1: usize, a2: usize) -> ! {
+    run_next_app();
     panic!("adsa");
 }

@@ -31,7 +31,11 @@ pub fn init_trap() -> (){
         fn __alltraps();
     }
     unsafe{
-        stvec::write(__alltraps as usize,TrapMode::Direct);
+        // stvec::write(__alltraps as usize,TrapMode::Direct);
+        core::arch::asm!(               //regard the trapMode:because trapmode is zero.so could do as below
+            "csrw stvec, {}",
+            in(reg) __alltraps as usize
+        )
     }
     
 }
