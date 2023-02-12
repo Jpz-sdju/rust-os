@@ -9,6 +9,7 @@ mod trap;
 mod syscall;
 mod sbi;
 mod batch;
+mod loader;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(location) = info.location() {
@@ -33,7 +34,9 @@ static JPZ:Person = Person{name:[0;1024],age:2};
 #[no_mangle]
 fn jpz_main() {
     // init_bss();
+    
     trap::trap_op::init_trap();
+    loader::load_apps();
     batch::run_next_app();
     panic!("fin!");
 }

@@ -20,5 +20,4 @@ for app in apps:
         "[build.py] application %s start with address %s"
         % (app, hex(base_address + step * app_id))
     )
-    if chapter == '3':
-        app_id = app_id + 1
+    app_id = app_id + 1
