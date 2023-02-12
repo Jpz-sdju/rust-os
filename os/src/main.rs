@@ -3,6 +3,7 @@
 #![feature(panic_info_message)]
 use core::panic::PanicInfo;
 
+mod config;
 #[macro_use]
 mod output_self;
 mod trap;
@@ -10,6 +11,7 @@ mod syscall;
 mod sbi;
 mod batch;
 mod loader;
+mod task;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(location) = info.location() {

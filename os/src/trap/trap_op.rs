@@ -3,10 +3,11 @@ core::arch::global_asm!(include_str!("alltraps_and_restore.S"));
 use crate::syscall::sys_call;
 use riscv::register::{
     stvec::TrapMode,
-    scause::{self,Exception,Trap},
+    scause::{self,Exception,Trap,Interrupt},
     stval, stvec, sstatus
 };
 use riscv::register::sstatus::{Sstatus,SPP};
+use crate::task::*;
 #[repr(C)]
 pub struct TrapContext{
     gpr : [usize;32],
@@ -31,7 +32,7 @@ pub fn init_trap() -> (){
         fn __alltraps();
     }
     unsafe{
-        // stvec::write(__alltraps as usize,TrapMode::Direct);
+        // stvec::write(__alltraps as usize,TrapMode::Direct);  //riscv repository is wrong to csrw stvec :(
         core::arch::asm!(               //regard the trapMode:because trapmode is zero.so could do as below
             "csrw stvec, {}",
             in(reg) __alltraps as usize
@@ -54,9 +55,12 @@ fn trap_handler(context: &mut TrapContext) -> & TrapContext{
             // run_next_app();
         },
         Trap::Exception(Exception::IllegalInstruction) => {
-            panic!("asd");
+            panic!("illegale instr!");
             // run_next_app();
         },
+        Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            suspend_and_run_next();
+        }
         _ => {
             panic!("zuile");
         }

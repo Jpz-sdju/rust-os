@@ -4,8 +4,7 @@ use lazy_static::*;
 use riscv::register::mcause::Trap;
 use core::cell::{RefCell, RefMut, Ref};
 use crate::trap::trap_op::TrapContext;
-const APP_NUM_LIMIT : usize = 8;
-const APP_BASE_ADDRESS: usize = 0x80400000;
+use crate::config::*;
 
 struct UserStack {
     data : [u8; 4096]
@@ -96,16 +95,18 @@ lazy_static! {
 }
 
 
-pub fn run_next_app() {
+pub fn run_next_app() -> !{
     let mut am = AM.access_mut();
     
     if am.current_num >= (am.all_app_num  ){
         panic!("is all done!");
     }
+    am.current_num += 1;
+    let current_num = am.current_num;
     // drop(am)
-    unsafe {
-        am.load_next_app();     //before bug fix: AM.load_next_app(),wtf
-    };
+    // unsafe {
+    //     am.load_next_app();     //before bug fix: AM.load_next_app(),wtf
+    // };
     drop(am);
     extern "C" {
         fn __restore(context: usize);
@@ -115,7 +116,7 @@ pub fn run_next_app() {
             KernelStack::push_context(
                 KERNEL_STACK.get_stack_bottom(),
                 TrapContext::init_context(
-                    APP_BASE_ADDRESS,
+                    APP_BASE_ADDRESS + (current_num - 1) * APP_SIZE_LIMIT,
                     USER_STACK.get_stack_bottom()
                 )
             )
