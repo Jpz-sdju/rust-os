@@ -34,3 +34,12 @@ fn get_base_address(i:usize) -> usize{
     APP_BASE_ADDRESS + i*APP_SIZE_LIMIT
 }
 
+pub fn get_num_app() -> usize {
+    extern "C" {
+        fn __num_app();
+    }
+    unsafe {
+        ((__num_app as usize) as *const usize).read_volatile()
+    }
+}
+

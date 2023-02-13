@@ -2,10 +2,11 @@
 
 use lazy_static::*;
 use riscv::register::mcause::Trap;
-use core::cell::{RefCell, RefMut, Ref};
+
 use crate::trap::trap_op::TrapContext;
 use crate::config::*;
-
+use crate::sync::UPSafeCell;
+use core::cell::RefCell;
 struct UserStack {
     data : [u8; 4096]
 }
@@ -44,19 +45,7 @@ struct AppManager{
     current_num : usize,
     app_start : [usize; APP_NUM_LIMIT]
 }
-struct UPSafeCell<T>{
-    inner:RefCell<T>
-}
-unsafe impl<T> Sync for UPSafeCell<T>{}
 
-impl<T> UPSafeCell<T>{
-    fn access(&self) -> Ref<'_, T> {
-        self.inner.borrow()
-    }
-    fn access_mut(&self) -> RefMut<'_, T> {
-        self.inner.borrow_mut()
-    }
-}
 impl AppManager {
     unsafe fn load_next_app(&mut self) {
         self.current_num += 1;
@@ -69,28 +58,26 @@ impl AppManager {
     }
 }
 lazy_static! {
-    static ref AM: UPSafeCell<AppManager> = UPSafeCell{
-        inner : RefCell::new({
-            extern "C"{
-                fn __num_app();
-            }
-            let num_app_ptr = (__num_app as usize ) as *const usize;
-            let all_app_num = unsafe {
-                num_app_ptr.read_volatile() 
-            }; 
-            let mut normal_app_start_array : [usize; APP_NUM_LIMIT] = [0 as usize;APP_NUM_LIMIT];
-            let app_start_array = unsafe {
-                core::slice::from_raw_parts(num_app_ptr.add(1), all_app_num +1 )//buf fix :length should be num of apps + 1
-            };
-            normal_app_start_array[0..= all_app_num].copy_from_slice(app_start_array);
-    
-            AppManager {
-                all_app_num : all_app_num,
-                current_num: 0,
-                app_start : normal_app_start_array
-            }
-        })
-    };
+    static ref AM: UPSafeCell<AppManager> = UPSafeCell::new({
+        extern "C"{
+            fn __num_app();
+        }
+        let num_app_ptr = (__num_app as usize ) as *const usize;
+        let all_app_num = unsafe {
+            num_app_ptr.read_volatile() 
+        }; 
+        let mut normal_app_start_array : [usize; APP_NUM_LIMIT] = [0 as usize;APP_NUM_LIMIT];
+        let app_start_array = unsafe {
+            core::slice::from_raw_parts(num_app_ptr.add(1), all_app_num +1 )//buf fix :length should be num of apps + 1
+        };
+        normal_app_start_array[0..= all_app_num].copy_from_slice(app_start_array);
+
+        AppManager {
+            all_app_num : all_app_num,
+            current_num: 0,
+            app_start : normal_app_start_array
+        }
+    });
 
 }
 

@@ -10,7 +10,7 @@ _other:
 .section .bss.stack
 .globl boot_stack
 boot_stack:
-    .space 1024*8;
+    .space 2048*8;
 
     
 .globl boot_stack_bottom
