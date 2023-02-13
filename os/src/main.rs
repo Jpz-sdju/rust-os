@@ -13,6 +13,7 @@ mod batch;
 mod loader;
 mod task;
 mod sync;
+mod stack_alloc;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(location) = info.location() {

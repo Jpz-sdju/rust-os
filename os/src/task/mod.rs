@@ -11,9 +11,14 @@ lazy_static! {
     static ref TASK_MANAGER:TaskManager = {
         let num_app = get_num_app();
         let tcb_list = [TaskControlBlock {
-            task_context: get_zero_init_task_context(),
+            task_context: TaskContext::get_zero_init_task_context(),
             task_status: TaskStatus::UnInit 
         }; APP_NUM_LIMIT];
+
+        for i in 0..num_app {
+            tcb_list[i].task_context = TaskContext::set_init_context(get_kernel_ptr()),
+            task_status: TaskStatus::Ready
+        }
 
         TaskManager {
             total_app_num : num_app,

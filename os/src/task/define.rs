@@ -22,6 +22,23 @@ pub struct TaskContext {
     sp : usize,
     callee_saved_reg : [usize; 12]
 }
+impl TaskContext {
+    pub fn get_zero_init_task_context() -> Self {
+        TaskContext {
+            ra: 0,
+            sp: 0,
+            callee_saved_reg: [0; 12]
+        }
+    }
+
+    pub fn set_init_context(kernel_ptr: usize) -> Self {
+        extern "C" {
+            fn __restore();
+        }
+        TaskContext { ra: __restore as usize, sp: kernel_ptr, callee_saved_reg: [0; 12] }
+
+    }
+}
 #[derive(Clone, Copy)]
 pub enum TaskStatus {
     UnInit,
@@ -29,10 +46,4 @@ pub enum TaskStatus {
     Running,
     Exiter
 }
-pub fn get_zero_init_task_context() -> TaskContext {
-    TaskContext {
-        ra: 0,
-        sp: 0,
-        callee_saved_reg: [0; 12]
-    }
-}
+
