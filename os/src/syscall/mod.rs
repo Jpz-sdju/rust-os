@@ -1,9 +1,10 @@
 use core::panic;
-use crate::batch::run_next_app;
+use crate::task::*;
 const SYSCALL_WRITE: usize = 64;
 const SYSCALL_EXIT: usize = 93;//?why
+const SYSCALL_YIELD: usize = 124;
 const STD_OUT: usize = 1;
-pub fn sys_call(cause: usize, a0: usize, a1: usize, a2: usize) -> usize{
+pub fn sys_call(cause: usize, a0: usize, a1: usize, a2: usize) -> isize{
     match cause{
         SYSCALL_WRITE => {
             sys_write(a0, a1, a2)
@@ -11,6 +12,9 @@ pub fn sys_call(cause: usize, a0: usize, a1: usize, a2: usize) -> usize{
         SYSCALL_EXIT => {
             sys_exit(a0, a1, a2)
         },
+        SYSCALL_YIELD => {
+            sys_yield()
+        }
         _ => {
             panic!("meiyou!");
         }
@@ -18,14 +22,14 @@ pub fn sys_call(cause: usize, a0: usize, a1: usize, a2: usize) -> usize{
 }
 
 //              fd          ptr         size
-fn sys_write(a0: usize, a1: usize, a2: usize) -> usize {
+fn sys_write(a0: usize, a1: usize, a2: usize) -> isize {
     match a0 {
         STD_OUT => {
             unsafe{
                 let content = core::slice::from_raw_parts(a1 as *const u8,a2);
                 let str = core::str::from_utf8(content).unwrap();
                 print!("{}",str);
-                str.len() 
+                str.len() as isize
             }
         }
         _ => {
@@ -36,6 +40,13 @@ fn sys_write(a0: usize, a1: usize, a2: usize) -> usize {
     
 }
 fn sys_exit(a0: usize, a1: usize, a2: usize) -> ! {
-    run_next_app();
+    panic!("[kernel] Application exited with code {}", a0);
+    exit_and_run_next();
     panic!("adsa");
+}
+
+fn sys_yield() -> isize{
+    suspend_and_run_next();
+    // panic!("sdl");
+    0
 }

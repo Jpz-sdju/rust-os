@@ -27,7 +27,7 @@ impl TrapContext {
         x
     }
 }
-pub fn init_trap() -> (){
+pub fn init_trap() {
     extern "C"{
         fn __alltraps();
     }
@@ -42,13 +42,13 @@ pub fn init_trap() -> (){
 }
 
 #[no_mangle]
-fn trap_handler(context: &mut TrapContext) -> & TrapContext{
+fn trap_handler(context: &mut TrapContext) -> &mut TrapContext{
     let scause = scause::read();
     let stval = stval::read();
     match scause.cause() {
         Trap::Exception(Exception::UserEnvCall) => {
             context.sepc += 4;
-            context.gpr[10] = sys_call(context.gpr[17], context.gpr[10], context.gpr[11], context.gpr[12]);
+            context.gpr[10] = sys_call(context.gpr[17], context.gpr[10], context.gpr[11], context.gpr[12]) as usize;
         },
         Trap::Exception(Exception::StoreFault) | Trap::Exception(Exception::StorePageFault) =>{
             panic!("asd");
@@ -60,9 +60,13 @@ fn trap_handler(context: &mut TrapContext) -> & TrapContext{
         },
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
             suspend_and_run_next();
-        }
+        },
         _ => {
-            panic!("zuile");
+            panic!(
+                "Unsupported trap {:?}",
+                scause.cause()
+            )
+            // panic!("sfsf")
         }
     }
     context

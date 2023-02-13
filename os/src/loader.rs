@@ -30,7 +30,7 @@ pub fn load_apps() {
 
 
 }
-fn get_base_address(i:usize) -> usize{
+pub fn get_base_address(i:usize) -> usize{
     APP_BASE_ADDRESS + i*APP_SIZE_LIMIT
 }
 

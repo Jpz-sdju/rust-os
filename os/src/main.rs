@@ -9,7 +9,6 @@ mod output_self;
 mod trap;
 mod syscall;
 mod sbi;
-mod batch;
 mod loader;
 mod task;
 mod sync;
@@ -33,15 +32,15 @@ struct Person{
     name:[i32;1024] 
 }
 
-static JPZ:Person = Person{name:[0;1024],age:2};
 
 #[no_mangle]
-fn jpz_main() {
+fn rmain() -> !{
     // init_bss();
     
     trap::trap_op::init_trap();
     loader::load_apps();
-    batch::run_next_app();
+    // batch::run_next_app();
+    task::run_first_task();
     panic!("fin!");
 }
 
