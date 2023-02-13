@@ -27,11 +27,6 @@ fn panic(info: &PanicInfo) -> ! {
     }
     sbi::shutdown()
 }
-struct Person{
-    age:i32,
-    name:[i32;1024] 
-}
-
 
 #[no_mangle]
 fn rmain() -> !{
