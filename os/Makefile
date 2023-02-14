@@ -9,7 +9,7 @@ ELF := ./target/$(ARCH)/debug/rust-os
 KERNEL_ENTRY_PA := 0x80200000
 bin: build
 	$(OBJCOPY) $(ELF) --strip-all hehi.bin
-qemu:bin
+qemu: bin
 	qemu-system-riscv64	\
 		-machine virt \
 		-nographic \
@@ -17,7 +17,7 @@ qemu:bin
 		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA) \
 		-d unimp
 
-debug:bin 
+debug: bin 
 	qemu-system-riscv64	\
 		-machine virt \
 		-nographic \
@@ -27,7 +27,7 @@ debug:bin
 
 gdb:
 	$(GDB) -tui -s $(ELF) -ex 'target remote localhost:1234'
-dis:
+dis: bin
 	rust-objdump --arch-name=riscv64 $(ELF) -$(DA) > exp.S
 
 build: 
