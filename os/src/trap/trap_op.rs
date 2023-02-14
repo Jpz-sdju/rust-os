@@ -1,5 +1,6 @@
 
 core::arch::global_asm!(include_str!("alltraps_and_restore.S"));
+use riscv::register::stvec::TrapMode;
 use crate::syscall::sys_call;
 use riscv::register::{
     scause::{self,Exception,Trap,Interrupt},

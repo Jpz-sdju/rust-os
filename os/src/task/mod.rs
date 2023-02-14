@@ -19,10 +19,10 @@ lazy_static! {
         }; APP_NUM_LIMIT];
 
         for i in 0..num_app {
-            tcb_list[i].task_context = TaskContext::set_init_context(get_kernel_ptr(i));
-            tcb_list[i].task_status =  TaskStatus::Ready;
+            (&mut tcb_list)[i].task_context = TaskContext::set_init_context(get_kernel_ptr(i));
+            (&mut tcb_list)[i].task_status =  TaskStatus::Ready;
         }
-
+        // panic!("{:x}",tcb_list[0].task_context.sp);
         TaskManager {
             total_app_num : num_app,
             inner: UPSafeCell::new(TaskManagerInner {

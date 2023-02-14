@@ -1,6 +1,7 @@
 .section .text.trap
 .globl __alltraps
 .globl __restore
+.align 2
 __alltraps:
     # la sp,KERNEL_STACK;
     csrrw sp, sscratch, sp; //now sscratch is point to user stack
@@ -52,8 +53,9 @@ __alltraps:
     mv a0,sp;
     call trap_handler;
 
+.section .text.trap2
 __restore:
-    ; mv sp,a0
+    # mv sp,a0
     #now the sp point at kernel stack!
 
     ld t0,32*8(sp);

@@ -14,7 +14,8 @@ qemu:bin
 		-machine virt \
 		-nographic \
 		-bios $(BOOTLOADER) \
-		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA)
+		-device loader,file=./hehi.bin,addr=$(KERNEL_ENTRY_PA) \
+		-d unimp
 
 debug:bin 
 	qemu-system-riscv64	\
@@ -25,7 +26,7 @@ debug:bin
 		-s -S
 
 gdb:
-	$(GDB) -s $(ELF) -ex 'target remote localhost:1234'
+	$(GDB) -tui -s $(ELF) -ex 'target remote localhost:1234'
 dis:
 	rust-objdump --arch-name=riscv64 $(ELF) -$(DA) > exp.S
 

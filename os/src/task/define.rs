@@ -32,11 +32,10 @@ impl TaskManager {
     }
 
     pub fn find_next_task(&self) -> Option<usize>{
-        let no = 0;
         let t = self.inner.access_mut();
         for i in 0..self.total_app_num {
-            if(t.tcb_list[i].task_status == TaskStatus::Ready) {
-                return Some(i);
+            if(t.tcb_list[self.total_app_num - i -1].task_status == TaskStatus::Ready) {
+                return Some(self.total_app_num - i -1);
             }
         }
         None
@@ -58,14 +57,14 @@ impl TaskManager {
         }
     }
 
-    pub fn run_first_task(&self) -> !{
+    pub fn run_first_task(&self) {
         let zero_task_context = TaskContext::get_zero_init_task_context();
         let cell = self.inner.access_mut();
         let mut first_task = cell.tcb_list[0];
         let first_task_ctx = first_task.task_context;
         first_task.task_status = TaskStatus::Running;
         let first_task_context_ptr = &first_task_ctx as *const TaskContext;
-    
+        drop(cell);
         unsafe {
             __switch(&zero_task_context as *const TaskContext, first_task_context_ptr);
         }
@@ -80,9 +79,9 @@ pub struct TaskControlBlock {
 }
 #[derive(Clone, Copy)]
 pub struct TaskContext {
-    ra : usize,
-    sp : usize,
-    callee_saved_reg : [usize; 12]
+    pub ra : usize,
+    pub sp : usize,
+    pub callee_saved_reg : [usize; 12]
 }
 impl TaskContext {
     pub fn get_zero_init_task_context() -> Self {

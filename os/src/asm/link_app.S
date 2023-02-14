@@ -9,10 +9,10 @@ __num_app:
 
 .section .data
 app_0_start:
-    .incbin "/home/oslab/work/rust-os/user/build/bin/hellowrold.bin"
+    .incbin "/home/oslab/rust-os/user/build/bin/hellowrold.bin"
 app_0_end:
 app_1_start:
-    .incbin "/home/oslab/work/rust-os/user/build/bin/hw.bin"
+    .incbin "/home/oslab/rust-os/user/build/bin/hw.bin"
 app_1_end:
 
 

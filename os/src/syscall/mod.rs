@@ -40,9 +40,9 @@ fn sys_write(a0: usize, a1: usize, a2: usize) -> isize {
     
 }
 fn sys_exit(a0: usize, a1: usize, a2: usize) -> ! {
-    panic!("[kernel] Application exited with code {}", a0);
     exit_and_run_next();
     panic!("adsa");
+    // 0
 }
 
 fn sys_yield() -> isize{

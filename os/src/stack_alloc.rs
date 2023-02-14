@@ -16,12 +16,12 @@ struct KernelStack {
 
 impl KernelStack {
     pub fn push_context(&self, ct_addr: TrapContext) -> usize{
-        let dst = self.get_stack_bottom() - core::mem::size_of::<TrapContext>();
+        let dst = (self.get_stack_bottom() - core::mem::size_of::<TrapContext>()) as *mut TrapContext;
 
         unsafe {
-            *(dst as *mut TrapContext) = ct_addr;
-            dst as usize
+            *dst = ct_addr;
         }
+        dst as usize
 
     }
     pub fn get_stack_bottom(&self) -> usize {
