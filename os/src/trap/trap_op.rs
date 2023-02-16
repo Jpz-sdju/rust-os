@@ -2,6 +2,7 @@
 core::arch::global_asm!(include_str!("alltraps_and_restore.S"));
 use riscv::register::stvec::TrapMode;
 use crate::syscall::sys_call;
+use crate::timer::*;
 use riscv::register::{
     scause::{self,Exception,Trap,Interrupt},
     stval, stvec, sstatus
@@ -59,8 +60,9 @@ fn trap_handler(context: &mut TrapContext) -> &mut TrapContext{
             // run_next_app();
         },
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            set_next_trigger();
             suspend_and_run_next();
-        },
+        }
         _ => {
             panic!(
                 "Unsupported trap {:?}",

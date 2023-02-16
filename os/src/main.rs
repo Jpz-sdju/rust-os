@@ -13,6 +13,7 @@ mod loader;
 mod task;
 mod sync;
 mod stack_alloc;
+mod timer;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(location) = info.location() {
@@ -34,6 +35,8 @@ fn rmain() -> !{
     
     trap::trap_op::init_trap();
     loader::load_apps();
+    trap::enable_timer_interrupt();
+    timer::set_next_trigger();
     // batch::run_next_app();
     task::run_first_task();
     panic!("fin!");
