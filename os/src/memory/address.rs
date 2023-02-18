@@ -11,11 +11,14 @@ impl From<usize> for PhysAddr {
     }
 }
 impl PhysAddr {
-    fn page_offset(&self) -> usize{
+    pub fn page_offset(&self) -> usize{
         self.0 & (1 << SV39_PAGE_SIZE -1)
     }
-    fn floor(&self) -> PhysPageNum {
+    pub fn floor(&self) -> PhysPageNum {
         PhysPageNum(self.0 / SV39_PAGE_SIZE)
+    }
+    pub fn ceil(&self) -> PhysPageNum {
+        PhysPageNum((self.0 + SV39_PAGE_SIZE -1) / SV39_PAGE_SIZE)
     }
 }
 

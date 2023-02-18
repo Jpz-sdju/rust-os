@@ -1,5 +1,6 @@
 use super::address::*;
 use crate::alloc::vec::Vec;
+use crate::config::*;
 trait FrameAllocator {
     fn new() -> Self;
     fn alloc(&mut self) -> Option<PhysPageNum>;
@@ -62,4 +63,12 @@ lazy_static! {
     pub static ref FRAME_ALLOCATOR: UPSafeCell<FrameAllocatorImpl> = unsafe {
         UPSafeCell::new(FrameAllocatorImpl::new())
     };
+}
+
+pub fn init_frame_allocator() {
+    extern "C" {
+        fn ekernel();
+    }
+    FRAME_ALLOCATOR.access_mut()
+    .init(PhysAddr::from(ekernel as usize).ceil(), PhysAddr::from(MEMORY_END).floor());
 }
