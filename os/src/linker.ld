@@ -36,5 +36,5 @@ SECTIONS{
     }
     ebss = .;
     . = ALIGN(4K);
-
+    ekernel = .;
 }

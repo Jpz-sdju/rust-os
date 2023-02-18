@@ -7,7 +7,7 @@ use core::panic::PanicInfo;
 
 use crate::memory::init_heap;
 extern crate alloc;
-
+extern crate bitflags;
 mod config;
 #[macro_use]
 mod output_self;
